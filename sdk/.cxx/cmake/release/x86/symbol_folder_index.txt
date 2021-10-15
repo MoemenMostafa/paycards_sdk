@@ -1,0 +1,1 @@
+/Users/quannguyen/Downloads/PayCards_Android-master/sdk/build/intermediates/cmake/release/obj/x86

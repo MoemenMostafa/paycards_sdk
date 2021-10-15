@@ -1,0 +1,87 @@
+{
+  "buildFiles": [
+    "/Users/quannguyen/Downloads/PayCards_Android-master/sdk/src/main/cpp/CMakeLists.txt",
+    "/Users/quannguyen/Downloads/PayCards_Android-master/sdk/src/main/cpp/eigen/CMakeLists.txt",
+    "/Users/quannguyen/Downloads/PayCards_Android-master/sdk/src/main/cpp/caffe/CMakeLists.txt",
+    "/Users/quannguyen/Downloads/PayCards_Android-master/sdk/src/main/cpp/libyuv/CMakeLists.txt",
+    "/Users/quannguyen/Downloads/PayCards_Android-master/sdk/src/main/cpp/protobuf/CMakeLists.txt",
+    "/Users/quannguyen/Downloads/PayCards_Android-master/sdk/src/main/cpp/crossplatform/CMakeLists.txt",
+    "/Users/quannguyen/Downloads/PayCards_Android-master/sdk/src/main/cpp/armneon2x86sse/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/quannguyen/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja",
+      "-C",
+      "/Users/quannguyen/Downloads/PayCards_Android-master/sdk/.cxx/cmake/release/arm64-v8a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/quannguyen/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja",
+    "-C",
+    "/Users/quannguyen/Downloads/PayCards_Android-master/sdk/.cxx/cmake/release/arm64-v8a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "protobuf-Release-arm64-v8a": {
+      "artifactName": "protobuf",
+      "buildCommandComponents": [
+        "/Users/quannguyen/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja",
+        "-C",
+        "/Users/quannguyen/Downloads/PayCards_Android-master/sdk/.cxx/cmake/release/arm64-v8a",
+        "protobuf"
+      ],
+      "abi": "arm64-v8a",
+      "output": "/Users/quannguyen/Downloads/PayCards_Android-master/sdk/.cxx/cmake/release/arm64-v8a/protobuf/libprotobuf.a",
+      "runtimeFiles": []
+    },
+    "caffe-Release-arm64-v8a": {
+      "artifactName": "caffe",
+      "buildCommandComponents": [
+        "/Users/quannguyen/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja",
+        "-C",
+        "/Users/quannguyen/Downloads/PayCards_Android-master/sdk/.cxx/cmake/release/arm64-v8a",
+        "caffe"
+      ],
+      "abi": "arm64-v8a",
+      "output": "/Users/quannguyen/Downloads/PayCards_Android-master/sdk/.cxx/cmake/release/arm64-v8a/caffe/libcaffe.a",
+      "runtimeFiles": []
+    },
+    "cardrecognizer-Release-arm64-v8a": {
+      "artifactName": "cardrecognizer",
+      "buildCommandComponents": [
+        "/Users/quannguyen/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja",
+        "-C",
+        "/Users/quannguyen/Downloads/PayCards_Android-master/sdk/.cxx/cmake/release/arm64-v8a",
+        "cardrecognizer"
+      ],
+      "abi": "arm64-v8a",
+      "output": "/Users/quannguyen/Downloads/PayCards_Android-master/sdk/build/intermediates/cmake/release/obj/arm64-v8a/libcardrecognizer.so",
+      "runtimeFiles": []
+    },
+    "crossplatform-Release-arm64-v8a": {
+      "artifactName": "crossplatform",
+      "buildCommandComponents": [
+        "/Users/quannguyen/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja",
+        "-C",
+        "/Users/quannguyen/Downloads/PayCards_Android-master/sdk/.cxx/cmake/release/arm64-v8a",
+        "crossplatform"
+      ],
+      "abi": "arm64-v8a",
+      "output": "/Users/quannguyen/Downloads/PayCards_Android-master/sdk/.cxx/cmake/release/arm64-v8a/crossplatform/libcrossplatform.a",
+      "runtimeFiles": []
+    },
+    "libyuv-Release-arm64-v8a": {
+      "artifactName": "libyuv",
+      "buildCommandComponents": [
+        "/Users/quannguyen/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja",
+        "-C",
+        "/Users/quannguyen/Downloads/PayCards_Android-master/sdk/.cxx/cmake/release/arm64-v8a",
+        "libyuv"
+      ],
+      "abi": "arm64-v8a",
+      "output": "/Users/quannguyen/Downloads/PayCards_Android-master/sdk/.cxx/cmake/release/arm64-v8a/libyuv/liblibyuv.a",
+      "runtimeFiles": []
+    }
+  }
+}

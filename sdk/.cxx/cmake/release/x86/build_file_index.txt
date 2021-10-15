@@ -1,0 +1,7 @@
+/Users/quannguyen/Downloads/PayCards_Android-master/sdk/src/main/cpp/CMakeLists.txt
+/Users/quannguyen/Downloads/PayCards_Android-master/sdk/src/main/cpp/eigen/CMakeLists.txt
+/Users/quannguyen/Downloads/PayCards_Android-master/sdk/src/main/cpp/caffe/CMakeLists.txt
+/Users/quannguyen/Downloads/PayCards_Android-master/sdk/src/main/cpp/libyuv/CMakeLists.txt
+/Users/quannguyen/Downloads/PayCards_Android-master/sdk/src/main/cpp/protobuf/CMakeLists.txt
+/Users/quannguyen/Downloads/PayCards_Android-master/sdk/src/main/cpp/crossplatform/CMakeLists.txt
+/Users/quannguyen/Downloads/PayCards_Android-master/sdk/src/main/cpp/armneon2x86sse/CMakeLists.txt
