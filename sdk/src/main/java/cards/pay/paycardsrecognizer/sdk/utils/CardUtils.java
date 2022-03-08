@@ -33,7 +33,7 @@ public final class CardUtils {
         if (null == cardNumber) {
             return "";
         }
-        return stringBuilder.toString();
+        return cardNumber.toString();
         // if (cardNumber.length() == 16) {
         //     final String beginNumber = cardNumber.substring(0, 6);
         //     final String endNumber = cardNumber.substring(cardNumber.length() - 2, cardNumber.length());
@@ -64,7 +64,6 @@ public final class CardUtils {
         //     stringBuilder.insert(9, " ");
         //     return stringBuilder.toString();
         // }
-        return "";
     }
 
 }
