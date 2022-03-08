@@ -73,13 +73,14 @@ public final class TorchManager {
         public void onTorchStatusChanged(boolean turnTorchOn) {
             if (mCamera == null) return;
             if (DBG) Log.d(TAG, "onTorchStatusChanged() called with: " +  "turnTorchOn = [" + turnTorchOn + "]");
-            if (turnTorchOn) {
-                mTorchTurnedOn = true;
-                if (!mPaused) CameraConfigurationUtils.setFlashLight(mCamera, true);
-            } else {
-                mTorchTurnedOn = false;
-                CameraConfigurationUtils.setFlashLight(mCamera, false);
-            }
+            // Disable Flash
+            // if (turnTorchOn) {
+            //     mTorchTurnedOn = true;
+            //     if (!mPaused) CameraConfigurationUtils.setFlashLight(mCamera, true);
+            // } else {
+            //     mTorchTurnedOn = false;
+            //     CameraConfigurationUtils.setFlashLight(mCamera, false);
+            // }
         }
     };
 }
