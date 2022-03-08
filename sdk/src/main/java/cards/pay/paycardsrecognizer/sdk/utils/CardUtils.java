@@ -33,7 +33,6 @@ public final class CardUtils {
         if (null == cardNumber) {
             return "";
         }
-        return cardNumber.toString();
         if (cardNumber.length() == 16) {
             final String beginNumber = cardNumber.substring(0, 6);
             final String endNumber = cardNumber.substring(cardNumber.length() - 2, cardNumber.length());
