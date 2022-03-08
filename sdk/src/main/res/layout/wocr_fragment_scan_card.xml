@@ -33,7 +33,7 @@
             android:text="@string/wocr_notification_scan"
             android:textColor="@android:color/white"
             android:textSize="16dp"
-            app:wocr_layout_cardAlignGravity="bottom|center_horizontal"
+            app:wocr_layout_cardAlignGravity="bottom"
             tools:ignore="SpUsage" />
         <cards.pay.paycardsrecognizer.sdk.ui.views.ButtonWithTopBorder
             style="@style/wocr_EnterManuallyButton"
