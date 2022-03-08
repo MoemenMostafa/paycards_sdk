@@ -326,20 +326,20 @@ bool CNumberRecognizer::CheckSum(const shared_ptr<INeuralNetworkResultList>& res
     //     return false;
     // }
     
-    int k = 0;
-    if (number.size()%2 == 0) k = 1;
+    // int k = 0;
+    // if (number.size()%2 == 0) k = 1;
         
-    int sum = 0;
-    int tmp;
+    // int sum = 0;
+    // int tmp;
     
-    for(int i = 0; i < number.size(); i++)
-    {
-        tmp = number[i] * ((i+k)%2 + 1);
-        if(tmp > 9) tmp -= 9;
-            sum += tmp;
-            }
+    // for(int i = 0; i < number.size(); i++)
+    // {
+    //     tmp = number[i] * ((i+k)%2 + 1);
+    //     if(tmp > 9) tmp -= 9;
+    //         sum += tmp;
+    //         }
     
-    if(sum%10 != 0 ) return false;
+    // if(sum%10 != 0 ) return false;
     
     return true;
 }
