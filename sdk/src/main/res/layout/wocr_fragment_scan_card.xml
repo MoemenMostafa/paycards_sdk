@@ -26,15 +26,7 @@
             android:src="@drawable/wocr_ic_flash"
             tools:visibility="visible"
             tools:ignore="RtlHardcoded" /> -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:text="@string/wocr_notification_scan"
-            android:textColor="@android:color/white"
-            android:textSize="16dp"
-            app:wocr_layout_cardAlignGravity="top|center_horizontal"
-            tools:ignore="SpUsage" />
+
         <cards.pay.paycardsrecognizer.sdk.ui.views.ButtonWithTopBorder
             style="@style/wocr_EnterManuallyButton"
             android:id="@+id/wocr_tv_enter_card_number_id"
