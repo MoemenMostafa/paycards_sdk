@@ -314,17 +314,17 @@ bool CNumberRecognizer::CheckSum(const shared_ptr<INeuralNetworkResultList>& res
         number.push_back(result->GetMaxIndex());
     }
     
-    if (number[0] != 5 && number[0] != 4 && number[0] != 2) {
-        return false;
-    }
+    // if (number[0] != 5 && number[0] != 4 && number[0] != 2) {
+    //     return false;
+    // }
     
-    if(number[0] == 2 && number[1] != 2) {
-        return false;
-    }
+    // if(number[0] == 2 && number[1] != 2) {
+    //     return false;
+    // }
     
-    if (number[0] == 5 && (number[1] < 1 || number[1] > 5)) {
-        return false;
-    }
+    // if (number[0] == 5 && (number[1] < 1 || number[1] > 5)) {
+    //     return false;
+    // }
     
     int k = 0;
     if (number.size()%2 == 0) k = 1;
