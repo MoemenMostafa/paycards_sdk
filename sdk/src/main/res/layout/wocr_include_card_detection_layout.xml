@@ -29,15 +29,6 @@
         android:textSize="16dp"
         app:wocr_layout_cardAlignGravity="top|center_horizontal"
         tools:ignore="SpUsage" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:text="@string/wocr_notification_scan"
-        android:textColor="@android:color/white"
-        android:textSize="16dp"
-        app:wocr_layout_cardAlignGravity="bottom|center_horizontal"
-        tools:ignore="SpUsage" />
 
     <TextView
         android:id="@+id/wocr_powered_by_paycards_link"
@@ -45,6 +36,5 @@
         app:wocr_layout_cardAlignGravity="bottom|left"
         tools:ignore="SpUsage"
         style="@style/wocr_PaycardsButton" />
-        
 
 </cards.pay.paycardsrecognizer.sdk.camera.widget.CameraPreviewLayout>
