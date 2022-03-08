@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:keepScreenOn="true"
-    android:paddingLeft="10bd"
     tools:context=".ui.ScanCardActivity">
 
     <RelativeLayout
@@ -39,10 +38,11 @@
         <TextView
             android:id="@+id/wocr_textview8"
             android:layout_width="match_parent"
-            android:layout_height="630dp"
+            android:layout_height="match_parent"
             android:gravity="bottom|center"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
+            android:paddingBottom="100dp"
             android:text="@string/wocr_scan_card_precausion"
             android:textColor="#FFFFFF"
             android:textSize="16sp" />
