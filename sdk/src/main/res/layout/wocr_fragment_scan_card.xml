@@ -18,14 +18,14 @@
 
         <include layout="@layout/wocr_include_card_detection_layout" />
 
-        <android.support.v7.widget.AppCompatImageButton
+        <!-- <android.support.v7.widget.AppCompatImageButton
             android:id="@+id/wocr_iv_flash_id"
             style="@style/wocr_FlashButton"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:src="@drawable/wocr_ic_flash"
             tools:visibility="visible"
-            tools:ignore="RtlHardcoded" />
+            tools:ignore="RtlHardcoded" /> -->
 
         <cards.pay.paycardsrecognizer.sdk.ui.views.ButtonWithTopBorder
             style="@style/wocr_EnterManuallyButton"

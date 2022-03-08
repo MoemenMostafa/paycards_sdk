@@ -56,14 +56,14 @@ public final class TorchManager {
     }
 
     public void toggleTorch() {
-        if (mPaused) return;
-        boolean newStatus = !isTorchTurnedOn();
-        if (DBG) Log.d(TAG, "toggleTorch() called with newStatus: " +  newStatus);
-        mRecognitionCore.setTorchStatus(newStatus);
+        // if (mPaused) return;
+        // boolean newStatus = !isTorchTurnedOn();
+        // if (DBG) Log.d(TAG, "toggleTorch() called with newStatus: " +  newStatus);
+        // mRecognitionCore.setTorchStatus(newStatus);
 
-        // onTorchStatusChanged() will not be called if the RecognitionCore internal status will not be changed.
-        // Sync twice to keep safe
-        CameraConfigurationUtils.setFlashLight(mCamera, newStatus);
+        // // onTorchStatusChanged() will not be called if the RecognitionCore internal status will not be changed.
+        // // Sync twice to keep safe
+        // CameraConfigurationUtils.setFlashLight(mCamera, newStatus);
     }
 
     private final TorchStatusListener mRecognitionCoreTorchStatusListener = new TorchStatusListener() {

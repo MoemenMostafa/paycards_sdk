@@ -48,6 +48,20 @@ public final class CardUtils {
             stringBuilder.insert(4, " ");
             stringBuilder.insert(11, " ");
             return stringBuilder.toString();
+        } else if (cardNumber.length() == 14) {
+            final String beginNumber = cardNumber.substring(0, 6);
+            final String endNumber = cardNumber.substring(cardNumber.length() - 1, cardNumber.length());
+            final StringBuilder stringBuilder = new StringBuilder(beginNumber + "********" + endNumber);
+            stringBuilder.insert(4, " ");
+            stringBuilder.insert(10, " ");
+            return stringBuilder.toString();
+        } else if (cardNumber.length() == 13) {
+            final String beginNumber = cardNumber.substring(0, 6);
+            final String endNumber = cardNumber.substring(cardNumber.length() - 1, cardNumber.length());
+            final StringBuilder stringBuilder = new StringBuilder(beginNumber + "********" + endNumber);
+            stringBuilder.insert(4, " ");
+            stringBuilder.insert(9, " ");
+            return stringBuilder.toString();
         }
         return "";
     }

@@ -101,7 +101,7 @@ public class ScanCardFragment extends Fragment {
 
         mCameraPreviewLayout = root.findViewById(R.id.wocr_card_recognition_view);
         mMainContent = root.findViewById(R.id.wocr_main_content);
-        mFlashButton = root.findViewById(R.id.wocr_iv_flash_id);
+        // mFlashButton = root.findViewById(R.id.wocr_iv_flash_id);
 
         initView(root);
 
