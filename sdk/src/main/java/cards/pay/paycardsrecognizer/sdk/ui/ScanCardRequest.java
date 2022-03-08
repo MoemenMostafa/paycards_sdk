@@ -11,7 +11,7 @@ public final class ScanCardRequest implements Parcelable {
 
     public static final boolean DEFAULT_SCAN_EXPIRATION_DATE = true;
 
-    public static final boolean DEFAULT_SCAN_CARD_HOLDER = true;
+    public static final boolean DEFAULT_SCAN_CARD_HOLDER = false;
 
     public static final boolean DEFAULT_GRAB_CARD_IMAGE = false;
 
