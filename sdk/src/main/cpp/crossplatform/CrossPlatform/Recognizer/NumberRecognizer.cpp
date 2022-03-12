@@ -5,7 +5,10 @@
 //  Created by Vladimir Tchernitski on 12/01/16.
 //  Copyright © 2016 Vladimir Tchernitski. All rights reserved.
 //
-
+#include <sstream> // string stream
+#include <iterator> // ostream_iterator
+#include <iostream> // cout
+#include <android/log.h>
 #include "NumberRecognizer.h"
 #include "IServiceContainer.h"
 #include "IRecognitionCore.h"
@@ -14,19 +17,34 @@
 #include "Utils.h"
 
 static const cv::Rect dateWindowRect(257,282,210,65);
+// Visa, Master, Dinner
 static const cv::Rect numberWindowRect(54,221,552,60);
-
-static const cv::Rect areaX0(0,0,136,37); // numberWindowRect coordinates
+// American
+static const cv::Rect numberWindowAmericanRect(79,221,552,60);
+// Card number Visa,Master
+static const cv::Rect areaX0(0,0,136,37);
 static const cv::Rect areaX1(138,0,136,37);
 static const cv::Rect areaX2(277,0,136,37);
 static const cv::Rect areaX3(416,0,136,37);
+// Card number Diner
+static const cv::Rect areaY0(0,0,136,37);
+static const cv::Rect areaY1(138,0,204,37);
+static const cv::Rect areaY2(345,0,136,37);
+// Card number American
+static const cv::Rect areaZ0(0,0,136,37);
+static const cv::Rect areaZ1(138,0,204,37);
+static const cv::Rect areaZ2(345,0,136,37);
 
 static const vector<cv::Rect> areasX = {areaX0, areaX1, areaX2, areaX3};
+static const vector<cv::Rect> areasY = {areaY0, areaY1, areaY2};
+static const vector<cv::Rect> areasZ = {areaZ0, areaZ1, areaZ2};
 
 static const cv::Size digitSize(25,37); // 960/660 = 1.45454545
 static int panDigitPaddingX = 2;
 static int panDigitPaddingY = 2;
 static const int spaceBWDidits = 3;
+
+int scanCount;
 
 CNumberRecognizer::CNumberRecognizer(const shared_ptr<IServiceContainer>& container) : _container(container)
 {
@@ -150,15 +168,67 @@ vector<Mat> CNumberRecognizer::SplitBlock(const Mat& mat, int xPos, int yPos, in
     return digits;
 }
 
-shared_ptr<INeuralNetworkResultList> CNumberRecognizer::Process(cv::Mat& matrix, cv::Rect& boundingRect)
+vector<Mat> CNumberRecognizer::SplitBlock6(const Mat& mat, int xPos, int yPos, int offset,
+                                          int digitSpace, int xPadding, int yPadding, vector<cv::Rect>& digitsRects)
 {
-    Mat numberWindow = matrix(numberWindowRect);
-    
+    vector<Mat> digits;
+
+    int x = offset + xPos;
+
+    for(int i=0; i<6; i++) {
+
+        cv::Rect rect = cv::Rect(x-xPadding, yPos-yPadding, digitSize.width + xPadding*2, digitSize.height + yPadding*2);
+
+        if (CUtils::ValidateROI(mat, rect)) {
+            digitsRects.push_back(rect);
+            Mat digit = mat(rect);
+            digits.push_back(digit);
+            x += digitSize.width + digitSpace;
+        }
+    }
+
+    return digits;
+}
+
+vector<Mat> CNumberRecognizer::SplitBlock5(const Mat& mat, int xPos, int yPos, int offset,
+                                           int digitSpace, int xPadding, int yPadding, vector<cv::Rect>& digitsRects)
+{
+    vector<Mat> digits;
+
+    int x = offset + xPos;
+
+    for(int i=0; i<5; i++) {
+
+        cv::Rect rect = cv::Rect(x-xPadding, yPos-yPadding, digitSize.width + xPadding*2, digitSize.height + yPadding*2);
+
+        if (CUtils::ValidateROI(mat, rect)) {
+            digitsRects.push_back(rect);
+            Mat digit = mat(rect);
+            digits.push_back(digit);
+            x += digitSize.width + digitSpace;
+        }
+    }
+
+    return digits;
+}
+
+shared_ptr<INeuralNetworkResultList> CNumberRecognizer::Process(cv::Mat& matrix, cv::Rect& boundingRect, int scanTime)
+{
+    scanCount = scanTime;
+    Mat numberWindow;
+    cv::Rect extendedRect;
     const int padding = 10;
-    
-    cv::Rect extendedRect = cv::Rect(numberWindowRect.x - padding, numberWindowRect.y - padding,
-                                     numberWindowRect.width + padding*2, numberWindowRect.height + padding*2);
-    
+
+    if(scanTime == 1){
+        numberWindow = matrix(numberWindowAmericanRect);
+        extendedRect = cv::Rect(numberWindowAmericanRect.x - padding, numberWindowAmericanRect.y - padding,
+                                numberWindowAmericanRect.width + padding*2, numberWindowAmericanRect.height + padding*2);
+    } else {
+        numberWindow = matrix(numberWindowRect);
+        extendedRect = cv::Rect(numberWindowRect.x - padding, numberWindowRect.y - padding,
+                                numberWindowRect.width + padding*2, numberWindowRect.height + padding*2);
+    }
+
     Mat extendedNumberWindow = matrix(extendedRect);
     
     vector<cv::Point> points = {cv::Point(0,0),cv::Point(0,0),cv::Point(0,0),cv::Point(0,0)};
@@ -168,7 +238,6 @@ shared_ptr<INeuralNetworkResultList> CNumberRecognizer::Process(cv::Mat& matrix,
         for (cv::Point& point : points) {
             point += cv::Point(padding,padding);
         }
-        
         shared_ptr<INeuralNetworkResultList> result = ProcessMatrixFinal(extendedNumberWindow, points, _recognitionNeuralNetwork, cv::Point(panDigitPaddingX,panDigitPaddingY), boundingRect);
         
         boundingRect.x += extendedRect.x;
@@ -196,8 +265,12 @@ bool CNumberRecognizer::PreLocalize(Mat& numberWindow, Mat& matrix, vector<cv::P
         for (cv::Point& point : points) {
             point.y = cvRound(data.at(0).second*23.0);
         }
-        
-        Rect rect = cv::Rect(numberWindowRect.x, numberWindowRect.y + points[0].y, numberWindowRect.width, digitSize.height);
+        Rect rect;
+        if(scanCount == 1){
+            rect = cv::Rect(numberWindowAmericanRect.x, numberWindowAmericanRect.y + points[0].y, numberWindowAmericanRect.width, digitSize.height);
+        } else {
+            rect = cv::Rect(numberWindowRect.x, numberWindowRect.y + points[0].y, numberWindowRect.width, digitSize.height);
+        }
         if (!CUtils::ValidateROI(matrix, rect)) return false;
         
         Mat fullNumberMat = matrix(rect);
@@ -205,16 +278,36 @@ bool CNumberRecognizer::PreLocalize(Mat& numberWindow, Mat& matrix, vector<cv::P
         shared_ptr<INeuralNetworkResultList> neuralNetworkResultListX = _factory.lock()->CreateNeuralNetworkResultList();
         
         vector<Mat> blocks;
-        
-        for(cv::Rect rect : areasX) {
-            Rect _rect = cv::Rect(rect.x,0, rect.width,fullNumberMat.rows);
-            
-            if (!CUtils::ValidateROI(fullNumberMat, _rect)) return false;
-            Mat block = fullNumberMat(_rect);
-            
-            blocks.push_back( block );
+
+        if(scanCount == 1){
+            for(cv::Rect rect : areasZ) {
+                Rect _rect = cv::Rect(rect.x,0, rect.width,fullNumberMat.rows);
+
+                if (!CUtils::ValidateROI(fullNumberMat, _rect)) return false;
+                Mat block = fullNumberMat(_rect);
+
+                blocks.push_back( block );
+            }
+        } else if(scanCount == 2){
+            for(cv::Rect rect : areasX) {
+                Rect _rect = cv::Rect(rect.x,0, rect.width,fullNumberMat.rows);
+
+                if (!CUtils::ValidateROI(fullNumberMat, _rect)) return false;
+                Mat block = fullNumberMat(_rect);
+
+                blocks.push_back( block );
+            }
+        } else {
+            for(cv::Rect rect : areasY) {
+                Rect _rect = cv::Rect(rect.x,0, rect.width,fullNumberMat.rows);
+
+                if (!CUtils::ValidateROI(fullNumberMat, _rect)) return false;
+                Mat block = fullNumberMat(_rect);
+
+                blocks.push_back( block );
+            }
         }
-        
+
         Predict(blocks, neuralNetworkResultListX, _localizationNeuralNetworkX);
         
         int k=0;
@@ -239,21 +332,47 @@ shared_ptr<INeuralNetworkResultList> CNumberRecognizer::ProcessMatrixFinal(Mat& 
 {
     if(auto factory = _factory.lock()) {
         vector<Mat> digits;
-        
+
         int count = 0;
         
         vector<cv::Rect> digitRects;
-        
-        for(auto it = begin(areasX); it < end(areasX); ++it, ++count) {
-            
-            vector<Mat> blockDigits = SplitBlock(numberWindow, points[count].x, points[0].y,
-                                                 areasX[count].x, spaceBWDidits, paddingPoint.x, paddingPoint.y, digitRects);
-            
-            if (blockDigits.size() != 4) return nullptr;
-            
-            digits.insert( digits.end(), blockDigits.begin(), blockDigits.end() );
+
+        if(scanCount == 1){
+            vector<Mat> blockDigits0 = SplitBlock(numberWindow, points[0].x, points[0].y,
+                                                  areasZ[0].x, spaceBWDidits, paddingPoint.x, paddingPoint.y, digitRects);
+            digits.insert( digits.end(), blockDigits0.begin(), blockDigits0.end() );
+
+            vector<Mat> blockDigits1 = SplitBlock6(numberWindow, points[1].x, points[0].y,
+                                                   areasZ[1].x, spaceBWDidits, paddingPoint.x, paddingPoint.y, digitRects);
+            digits.insert( digits.end(), blockDigits1.begin(), blockDigits1.end() );
+
+            vector<Mat> blockDigits2 = SplitBlock5(numberWindow, points[2].x, points[0].y,
+                                                  areasZ[2].x, spaceBWDidits, paddingPoint.x, paddingPoint.y, digitRects);
+            digits.insert( digits.end(), blockDigits2.begin(), blockDigits2.end() );
+        } else if (scanCount == 2){
+            for(auto it = begin(areasX); it < end(areasX); ++it, ++count) {
+                vector<Mat> blockDigits = SplitBlock(numberWindow, points[count].x, points[0].y,
+                                                     areasX[count].x, spaceBWDidits, paddingPoint.x, paddingPoint.y, digitRects);
+                if (blockDigits.size() != 4) return nullptr; //note
+
+                digits.insert( digits.end(), blockDigits.begin(), blockDigits.end() );
+            }
+        } else {
+            vector<Mat> blockDigits0 = SplitBlock(numberWindow, points[0].x, points[0].y,
+                                                  areasY[0].x, spaceBWDidits, paddingPoint.x, paddingPoint.y, digitRects);
+            digits.insert( digits.end(), blockDigits0.begin(), blockDigits0.end() );
+
+            vector<Mat> blockDigits1 = SplitBlock6(numberWindow, points[1].x, points[0].y,
+                                                   areasY[1].x, spaceBWDidits, paddingPoint.x, paddingPoint.y, digitRects);
+            digits.insert( digits.end(), blockDigits1.begin(), blockDigits1.end() );
+
+            vector<Mat> blockDigits2 = SplitBlock(numberWindow, points[2].x, points[0].y,
+                                                  areasY[2].x, spaceBWDidits, paddingPoint.x, paddingPoint.y, digitRects);
+            digits.insert( digits.end(), blockDigits2.begin(), blockDigits2.end() );
         }
-        
+
+//        if (blockDigits.size() != 4) return nullptr;
+
         shared_ptr<INeuralNetworkResultList> neuralNetworkResultDigits = _factory.lock()->CreateNeuralNetworkResultList();
         
         int minX = INT_MAX;
@@ -273,6 +392,7 @@ shared_ptr<INeuralNetworkResultList> CNumberRecognizer::ProcessMatrixFinal(Mat& 
         Predict(digits, neuralNetworkResultDigits, _recognitionNeuralNetwork);
         
         if (ValidateNumber(neuralNetworkResultDigits)) {
+            __android_log_print(ANDROID_LOG_INFO, "TRACKING_SCAN","ValidateNumber true");
             return neuralNetworkResultDigits;
         }
     }
@@ -283,7 +403,7 @@ shared_ptr<INeuralNetworkResultList> CNumberRecognizer::ProcessMatrixFinal(Mat& 
 bool CNumberRecognizer::ValidateNumber(const shared_ptr<INeuralNetworkResultList>& result)
 {
     /// check probabilities
-    const float threshold = 0.75;
+    const float threshold = 0.4; // 0.75
     const int maxDoubtfulCount = 1;
     
     int non = 0;
@@ -300,7 +420,7 @@ bool CNumberRecognizer::ValidateNumber(const shared_ptr<INeuralNetworkResultList
     if (non >= maxDoubtfulCount) {
         return false;
     }
-    
+//
     return CheckSum(result);
 }
 
@@ -313,33 +433,34 @@ bool CNumberRecognizer::CheckSum(const shared_ptr<INeuralNetworkResultList>& res
         shared_ptr<INeuralNetworkResult> result = *it;
         number.push_back(result->GetMaxIndex());
     }
-    
-    if (number[0] != 5 && number[0] != 4 && number[0] != 2) {
-        return false;
-    }
-    
-    if(number[0] == 2 && number[1] != 2) {
-        return false;
-    }
-    
-    if (number[0] == 5 && (number[1] < 1 || number[1] > 5)) {
-        return false;
-    }
-    
-    int k = 0;
-    if (number.size()%2 == 0) k = 1;
-        
-    int sum = 0;
-    int tmp;
-    
-    for(int i = 0; i < number.size(); i++)
-    {
-        tmp = number[i] * ((i+k)%2 + 1);
-        if(tmp > 9) tmp -= 9;
-            sum += tmp;
-            }
-    
-    if(sum%10 != 0 ) return false;
-    
+
+//
+//    if (number[0] != 5 && number[0] != 4 && number[0] != 2) {
+//        return false;
+//    }
+//
+//    if(number[0] == 2 && number[1] != 2) {
+//        return false;
+//    }
+//
+//    if (number[0] == 5 && (number[1] < 1 || number[1] > 5)) {
+//        return false;
+//    }
+//
+//    int k = 0;
+//    if (number.size()%2 == 0) k = 1;
+//
+//    int sum = 0;
+//    int tmp;
+//
+//    for(int i = 0; i < number.size(); i++)
+//    {
+//        tmp = number[i] * ((i+k)%2 + 1);
+//        if(tmp > 9) tmp -= 9;
+//            sum += tmp;
+//            }
+//
+//    if(sum%10 != 0 ) return false;
+
     return true;
 }

@@ -25,7 +25,7 @@ public:
     
 public:
   
-    virtual shared_ptr<INeuralNetworkResultList> Process(cv::Mat& matrix, cv::Rect& boundingRect) = 0;
+    virtual shared_ptr<INeuralNetworkResultList> Process(cv::Mat& matrix, cv::Rect& boundingRect, int scanTime) = 0;
     virtual bool Deploy() = 0;
     
     virtual void SetRecognitionMode(PayCardsRecognizerMode flag) = 0;

@@ -185,7 +185,7 @@ public class CardDetectionStateView extends View {
         if (mCardGradientDrawable.getBounds().width() == 0) return;
         drawBackground(canvas);
         drawCorners(canvas);
-        drawRecognitionResult(canvas);
+//        drawRecognitionResult(canvas);
     }
 
     private void drawBackground(Canvas canvas) {

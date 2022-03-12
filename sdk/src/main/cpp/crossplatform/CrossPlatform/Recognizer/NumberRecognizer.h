@@ -26,7 +26,7 @@ public:
     
 public:
     
-    virtual shared_ptr<INeuralNetworkResultList> Process(cv::Mat& matrix, cv::Rect& boundingRect);
+    virtual shared_ptr<INeuralNetworkResultList> Process(cv::Mat& matrix, cv::Rect& boundingRect, int scanTime);
     
     virtual bool Deploy();
 
@@ -49,6 +49,10 @@ private:
     void Predict(const vector<cv::Mat>& matrixes, shared_ptr<INeuralNetworkResultList>& neuralNetworkResultList, const shared_ptr<INeuralNetwork>& neuralNetwork);
     vector<cv::Mat> SplitBlock(const cv::Mat& mat, int xPos, int yPos, int offset,
                            int digitSpace, int xPadding, int yPadding, vector<cv::Rect>& digitsRects);
+    vector<cv::Mat> SplitBlock5(const cv::Mat& mat, int xPos, int yPos, int offset,
+                               int digitSpace, int xPadding, int yPadding, vector<cv::Rect>& digitsRects);
+    vector<cv::Mat> SplitBlock6(const cv::Mat& mat, int xPos, int yPos, int offset,
+                                int digitSpace, int xPadding, int yPadding, vector<cv::Rect>& digitsRects);
     bool PreLocalize(cv::Mat& numberWindow, cv::Mat& matrix, vector<cv::Point>& points);
 
     shared_ptr<INeuralNetworkResultList> ProcessMatrixFinal(cv::Mat& numberWindow,

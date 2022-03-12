@@ -9,6 +9,12 @@
 #include <thread>
 #include <unistd.h>
 
+#include <sstream> // string stream
+#include <iterator> // ostream_iterator
+#include <iostream> // cout
+#include <android/log.h>
+
+#include "INeuralNetworkObjectFactory.h"
 #include "RecognitionCore.h"
 #include "IServiceContainer.h"
 #include "IFrameStorage.h"
@@ -424,17 +430,63 @@ bool CRecognitionCore::RecognizeNumber()
 {
     cv::Rect boundingRect;
     shared_ptr<INeuralNetworkResultList> result;
-    
+    vector<int> number = {};
+
     if(auto frameStorage = _frameStorage.lock()) {
         if(auto numberRecognizer = _numberRecognizer.lock()) {
             if(auto recognitionResult = _recognitionResult.lock()) {
                 Mat frame;
                 frameStorage->GetCurrentFrame(frame);
-                result = numberRecognizer->Process(frame, boundingRect);
+
+                result = numberRecognizer->Process(frame, boundingRect, 1);
                 if(result) {
-                    recognitionResult->SetNumberResult(result);
-                    recognitionResult->SetNumberRect(boundingRect);
-                    recognitionResult->SetCardImage(frame.clone());
+                    for(INeuralNetworkResultList::ResultIterator it=result->Begin(); it != result->End(); ++it)
+                    {
+                        shared_ptr<INeuralNetworkResult> result = *it;
+                        number.push_back(result->GetMaxIndex());
+                    }
+                    stringstream showNumber;
+                    copy(number.begin(), number.end(), std::ostream_iterator<int>(showNumber, ""));
+                    string n = showNumber.str();
+                    string cardType = n.substr(0, 2);
+                    __android_log_print(ANDROID_LOG_ERROR, "TRACKERS1", "%s", n.c_str());
+
+                    if(cardType == "37" || cardType == "34") {
+                        recognitionResult->SetNumberResult(result);
+                        recognitionResult->SetNumberRect(boundingRect);
+                        recognitionResult->SetCardImage(frame.clone());
+                    } else {
+                        number = {};
+                        result = numberRecognizer->Process(frame, boundingRect, 2);
+                        if(result) {
+                            for(INeuralNetworkResultList::ResultIterator it=result->Begin(); it != result->End(); ++it)
+                            {
+                                shared_ptr<INeuralNetworkResult> result = *it;
+                                number.push_back(result->GetMaxIndex());
+                            }
+                            stringstream showNumber;
+                            copy(number.begin(), number.end(), std::ostream_iterator<int>(showNumber, ""));
+                            string n = showNumber.str();
+                            string cardType = n.substr(0, 2);
+                            __android_log_print(ANDROID_LOG_ERROR, "TRACKERS2", "%s", n.c_str());
+                            if(cardType == "36" || cardType == "38"){
+                                __android_log_print(ANDROID_LOG_INFO, "TRACKING_SCAN","Scan Dinner");
+                                number = {};
+                                result = numberRecognizer->Process(frame, boundingRect, 3);
+                                if (result) {
+                                    recognitionResult->SetNumberResult(result);
+                                    recognitionResult->SetNumberRect(boundingRect);
+                                    recognitionResult->SetCardImage(frame.clone());
+                                }
+                            } else {
+                                recognitionResult->SetNumberResult(result);
+                                recognitionResult->SetNumberRect(boundingRect);
+                                recognitionResult->SetCardImage(frame.clone());
+                            }
+                        }
+                    }
+
+
                 }
                 if(auto torchManager = _torchManager.lock()) {
                     torchManager->IncrementCounter();
@@ -460,6 +512,7 @@ bool CRecognitionCore::RecognizeDate()
                 result = dateRecognizer->Process(frame, samples, boundingRect);
                 
                 dateRecognitionAttemptsCount++;
+
                 if (result) {
                     _isIdle.store(true);
                     recognitionResult->SetDateResult(result);
