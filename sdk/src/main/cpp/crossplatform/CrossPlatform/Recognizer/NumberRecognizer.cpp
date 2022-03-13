@@ -33,7 +33,7 @@ static const cv::Rect areaY2(345,0,136,37);
 // Card number American
 static const cv::Rect areaZ0(0,0,136,37);
 static const cv::Rect areaZ1(138,0,204,37);
-static const cv::Rect areaZ2(345,0,136,37);
+static const cv::Rect areaZ2(342,0,136,37);
 
 static const vector<cv::Rect> areasX = {areaX0, areaX1, areaX2, areaX3};
 static const vector<cv::Rect> areasY = {areaY0, areaY1, areaY2};
@@ -392,7 +392,6 @@ shared_ptr<INeuralNetworkResultList> CNumberRecognizer::ProcessMatrixFinal(Mat& 
         Predict(digits, neuralNetworkResultDigits, _recognitionNeuralNetwork);
         
         if (ValidateNumber(neuralNetworkResultDigits)) {
-            __android_log_print(ANDROID_LOG_INFO, "TRACKING_SCAN","ValidateNumber true");
             return neuralNetworkResultDigits;
         }
     }
@@ -403,7 +402,12 @@ shared_ptr<INeuralNetworkResultList> CNumberRecognizer::ProcessMatrixFinal(Mat& 
 bool CNumberRecognizer::ValidateNumber(const shared_ptr<INeuralNetworkResultList>& result)
 {
     /// check probabilities
-    const float threshold = 0.4; // 0.75
+    float threshold; // 0.75
+    if (scanCount == 1){
+        threshold = 0.4;
+    } else {
+        threshold = 0.4;
+    }
     const int maxDoubtfulCount = 1;
     
     int non = 0;
