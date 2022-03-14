@@ -28,9 +28,10 @@
 
 #include "Utils.h"
 
-#define kDateRecognitionAttempts  5
+#define kDateRecognitionAttempts  10
 
 static int dateRecognitionAttemptsCount = 0;
+static string card = "american";
 
 bool IRecognitionCore::GetInstance(shared_ptr<IRecognitionCore> &recognitionCore,
                                    const shared_ptr<IRecognitionCoreDelegate>& recognitionDelegate,
@@ -437,7 +438,7 @@ bool CRecognitionCore::RecognizeNumber()
             if(auto recognitionResult = _recognitionResult.lock()) {
                 Mat frame;
                 frameStorage->GetCurrentFrame(frame);
-
+                card = "american";
                 result = numberRecognizer->Process(frame, boundingRect, 1);
                 if(result) {
                     for(INeuralNetworkResultList::ResultIterator it=result->Begin(); it != result->End(); ++it)
@@ -456,6 +457,7 @@ bool CRecognitionCore::RecognizeNumber()
                         recognitionResult->SetCardImage(frame.clone());
                     } else {
                         number = {};
+                        card = "visa";
                         result = numberRecognizer->Process(frame, boundingRect, 2);
                         if(result) {
                             for(INeuralNetworkResultList::ResultIterator it=result->Begin(); it != result->End(); ++it)
@@ -471,6 +473,7 @@ bool CRecognitionCore::RecognizeNumber()
                             if(cardType == "36" || cardType == "38"){
                                 __android_log_print(ANDROID_LOG_INFO, "TRACKING_SCAN3","Scan Dinner");
                                 number = {};
+                                card = "diners";
                                 result = numberRecognizer->Process(frame, boundingRect, 3);
                                 if (result) {
                                     recognitionResult->SetNumberResult(result);
@@ -491,7 +494,6 @@ bool CRecognitionCore::RecognizeNumber()
             }
         }
     }
-
     return result != nullptr;
 }
 
@@ -504,10 +506,9 @@ bool CRecognitionCore::RecognizeDate()
             if(auto recognitionResult = _recognitionResult.lock()) {
                 Mat frame;
                 frameStorage->GetCurrentFrame(frame);
-                
+                __android_log_print(ANDROID_LOG_ERROR, "TRACKING_DATE", "%s", card.c_str());
                 vector<cv::Mat> samples;
-                result = dateRecognizer->Process(frame, samples, boundingRect);
-                
+                result = dateRecognizer->Process(frame, samples, boundingRect, card);
                 dateRecognitionAttemptsCount++;
 
                 if (result) {

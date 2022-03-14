@@ -25,7 +25,7 @@ public:
     
 public:
 
-    virtual shared_ptr<INeuralNetworkResultList> Process(cv::Mat& frame, vector<cv::Mat>& samples, cv::Rect& boundingRect);
+    virtual shared_ptr<INeuralNetworkResultList> Process(cv::Mat& frame, vector<cv::Mat>& samples, cv::Rect& boundingRect, string card);
     virtual bool Deploy();
 
     virtual void SetRecognitionMode(PayCardsRecognizerMode flag);

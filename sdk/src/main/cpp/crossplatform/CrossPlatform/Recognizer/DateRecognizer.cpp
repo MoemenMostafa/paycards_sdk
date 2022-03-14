@@ -5,14 +5,22 @@
 //  Created by Vladimir Tchernitski on 12/01/16.
 //  Copyright © 2016 Vladimir Tchernitski. All rights reserved.
 //
-
+#include <sstream> // string stream
+#include <iterator> // ostream_iterator
+#include <iostream> // cout
+#include <android/log.h>
 #include "DateRecognizer.h"
 #include "INeuralNetworkObjectFactory.h"
 #include "IServiceContainer.h"
 #include "IRecognitionCoreDelegate.h"
 #include "Utils.h"
 
+// Visa, Master
 static const cv::Rect dateWindowRect(257,282,210,65);
+// American
+static const cv::Rect dateAmericanWindowRect(54,282,210,65);
+// Diner club
+static const cv::Rect dateDinerWindowRect(390,328,210,65);
 
 CDateRecognizer::CDateRecognizer(shared_ptr<IServiceContainer> container) : _container(container)
 {
@@ -131,36 +139,48 @@ bool CDateRecognizer::ValidateDate(const shared_ptr<INeuralNetworkResultList>& d
         shared_ptr<INeuralNetworkResult> result = *it;
         minConfidence = MIN(minConfidence, result->GetMaxProbability());
     }
-    
+
     if (minConfidence < 0.95) {
         return false;
     }
-    
-    shared_ptr<INeuralNetworkResult> firstResult = dateResult->GetAtIndex(0);
-    
-    
-    if (firstResult->GetMaxIndex() > 1) {
-        return false;
+
+    vector<int> number = {};
+
+    for(INeuralNetworkResultList::ResultIterator it=dateResult->Begin(); it != dateResult->End(); ++it)
+    {
+        shared_ptr<INeuralNetworkResult> result = *it;
+        number.push_back(result->GetMaxIndex());
     }
-    
-    shared_ptr<INeuralNetworkResult> secondResult = dateResult->GetAtIndex(1);
-    if (firstResult->GetMaxIndex() == 1 && secondResult->GetMaxIndex() > 2) {
-        return false;
-    }
-    
-    if (firstResult->GetMaxIndex() == 0 && secondResult->GetMaxIndex() == 0) {
-        return false;
-    }
-    
-    shared_ptr<INeuralNetworkResult> thirdResult = dateResult->GetAtIndex(2);
-    if (thirdResult->GetMaxIndex() == 0 || thirdResult->GetMaxIndex() > 2) {
-        return false;
-    }
-    
-    if (firstResult->GetMaxIndex() == 1 && thirdResult->GetMaxIndex() == 1
-            && secondResult->GetMaxIndex() == 1 && dateResult->GetAtIndex(3)->GetMaxIndex() == 1) {
-        return false;
-    }
+    stringstream showNumber;
+    copy(number.begin(), number.end(), std::ostream_iterator<int>(showNumber, ""));
+    string n = showNumber.str();
+    __android_log_print(ANDROID_LOG_ERROR, "GUEST_DATE", "%s", n.c_str());
+
+//    shared_ptr<INeuralNetworkResult> firstResult = dateResult->GetAtIndex(0);
+//
+//
+//    if (firstResult->GetMaxIndex() > 1) {
+//        return false;
+//    }
+//
+//    shared_ptr<INeuralNetworkResult> secondResult = dateResult->GetAtIndex(1);
+//    if (firstResult->GetMaxIndex() == 1 && secondResult->GetMaxIndex() > 2) {
+//        return false;
+//    }
+
+//    if (firstResult->GetMaxIndex() == 0 && secondResult->GetMaxIndex() == 0) {
+//        return false;
+//    }
+
+//    shared_ptr<INeuralNetworkResult> thirdResult = dateResult->GetAtIndex(2);
+//    if (thirdResult->GetMaxIndex() == 0 || thirdResult->GetMaxIndex() > 2) {
+//        return false;
+//    }
+
+//    if (firstResult->GetMaxIndex() == 1 && thirdResult->GetMaxIndex() == 1
+//            && secondResult->GetMaxIndex() == 1 && dateResult->GetAtIndex(3)->GetMaxIndex() == 1) {
+//        return false;
+//    }
 
     return true;
 }
@@ -234,11 +254,21 @@ bool CDateRecognizer::RefineDateLocationL1(Mat& dateMat, const vector<cv::Point>
     return false;
 }
 
-shared_ptr<INeuralNetworkResultList> CDateRecognizer::Process(cv::Mat& frame, vector<cv::Mat>& samples, cv::Rect& boundingRect)
+shared_ptr<INeuralNetworkResultList> CDateRecognizer::Process(cv::Mat& frame, vector<cv::Mat>& samples, cv::Rect& boundingRect, string card)
 {
     shared_ptr<INeuralNetworkResultList> finalResult = nullptr;
-    
-    Mat dateMat = frame(dateWindowRect);
+    cv::Rect customWindowRect;
+    Mat dateMat;
+    if (card == "american") {
+        customWindowRect = dateAmericanWindowRect;
+        dateMat = frame(dateAmericanWindowRect);
+    } else if (card == "visa") {
+        customWindowRect = dateWindowRect;
+        dateMat = frame(dateWindowRect);
+    } else if (card == "diners") {
+        customWindowRect = dateDinerWindowRect;
+        dateMat = frame(dateDinerWindowRect);
+    }
 
     std::vector<cv::Rect> dateRects;
     std::vector<int> rejectLevels;
@@ -270,7 +300,7 @@ shared_ptr<INeuralNetworkResultList> CDateRecognizer::Process(cv::Mat& frame, ve
     // create vector of rects centers, we use it to refine location by regression NN
     vector<cv::Point> rectCentersL0;
     for (cv::Rect& rect : dateRects) {
-        cv::Point center = cv::Point(rect.x + rect.width/2 + dateWindowRect.x, rect.y + rect.height/2 + dateWindowRect.y);
+        cv::Point center = cv::Point(rect.x + rect.width/2 + customWindowRect.x, rect.y + rect.height/2 + customWindowRect.y);
         rectCentersL0.push_back(center);
     }
     
@@ -281,8 +311,8 @@ shared_ptr<INeuralNetworkResultList> CDateRecognizer::Process(cv::Mat& frame, ve
     // extend the initial date matrix, because we are going to refine the location of the rects
     // so the correct location can be outside of the initial matrix
     const int padding = 10;
-    cv::Rect extendedRect = cv::Rect(dateWindowRect.x - padding, dateWindowRect.y - padding,
-                                     dateWindowRect.width + padding*2, dateWindowRect.height + padding*2);
+    cv::Rect extendedRect = cv::Rect(customWindowRect.x - padding, customWindowRect.y - padding,
+                                     customWindowRect.width + padding*2, customWindowRect.height + padding*2);
     
     // create vector of rects centers, we use it to refine location by regression NN
     vector<cv::Point> rectCentersL1;
