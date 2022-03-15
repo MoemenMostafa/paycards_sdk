@@ -51,19 +51,19 @@ public class Card implements Serializable, Parcelable {
         return mExpirationDate;
     }
 
-    // @Override
-    // public boolean equals(Object o) {
-    //     if (this == o) return true;
-    //     if (o == null || getClass() != o.getClass()) return false;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-    //     Card card = (Card) o;
+        Card card = (Card) o;
 
-    //     if (mCardNumber != null ? !mCardNumber.equals(card.mCardNumber) : card.mCardNumber != null)
-    //         return false;
-    //     if (mCardHolder != null ? !mCardHolder.equals(card.mCardHolder) : card.mCardHolder != null)
-    //         return false;
-    //     return mExpirationDate != null ? mExpirationDate.equals(card.mExpirationDate) : card.mExpirationDate == null;
-    // }
+        if (mCardNumber != null ? !mCardNumber.equals(card.mCardNumber) : card.mCardNumber != null)
+            return false;
+        if (mCardHolder != null ? !mCardHolder.equals(card.mCardHolder) : card.mCardHolder != null)
+            return false;
+        return mExpirationDate != null ? mExpirationDate.equals(card.mExpirationDate) : card.mExpirationDate == null;
+    }
 
     @Override
     public int hashCode() {
