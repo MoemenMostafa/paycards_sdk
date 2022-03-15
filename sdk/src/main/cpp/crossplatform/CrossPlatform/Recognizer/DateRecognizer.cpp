@@ -144,17 +144,17 @@ bool CDateRecognizer::ValidateDate(const shared_ptr<INeuralNetworkResultList>& d
         return false;
     }
 
-    vector<int> number = {};
-
-    for(INeuralNetworkResultList::ResultIterator it=dateResult->Begin(); it != dateResult->End(); ++it)
-    {
-        shared_ptr<INeuralNetworkResult> result = *it;
-        number.push_back(result->GetMaxIndex());
-    }
-    stringstream showNumber;
-    copy(number.begin(), number.end(), std::ostream_iterator<int>(showNumber, ""));
-    string n = showNumber.str();
-    __android_log_print(ANDROID_LOG_ERROR, "GUEST_DATE", "%s", n.c_str());
+//    vector<int> number = {};
+//
+//    for(INeuralNetworkResultList::ResultIterator it=dateResult->Begin(); it != dateResult->End(); ++it)
+//    {
+//        shared_ptr<INeuralNetworkResult> result = *it;
+//        number.push_back(result->GetMaxIndex());
+//    }
+//    stringstream showNumber;
+//    copy(number.begin(), number.end(), std::ostream_iterator<int>(showNumber, ""));
+//    string n = showNumber.str();
+//    __android_log_print(ANDROID_LOG_ERROR, "GUEST_DATE", "%s", n.c_str());
 
 //    shared_ptr<INeuralNetworkResult> firstResult = dateResult->GetAtIndex(0);
 //

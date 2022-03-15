@@ -406,7 +406,7 @@ bool CNumberRecognizer::ValidateNumber(const shared_ptr<INeuralNetworkResultList
     if (scanCount == 1){
         threshold = 0.4;
     } else {
-        __android_log_print(ANDROID_LOG_INFO, "THRESHOLD","Set threshold 0.7");
+//        __android_log_print(ANDROID_LOG_INFO, "THRESHOLD","Set threshold 0.7");
         threshold = 0.75;
     }
     const int maxDoubtfulCount = 1;

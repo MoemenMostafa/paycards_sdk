@@ -450,7 +450,7 @@ bool CRecognitionCore::RecognizeNumber()
                     copy(number.begin(), number.end(), std::ostream_iterator<int>(showNumber, ""));
                     string n = showNumber.str();
                     string cardType = n.substr(0, 2);
-                    __android_log_print(ANDROID_LOG_ERROR, "TRACKING_SCAN1", "%s", n.c_str());
+//                    __android_log_print(ANDROID_LOG_ERROR, "TRACKING_SCAN1", "%s", n.c_str());
                     if(cardType == "37" || cardType == "34") {
                         recognitionResult->SetNumberResult(result);
                         recognitionResult->SetNumberRect(boundingRect);
@@ -469,9 +469,9 @@ bool CRecognitionCore::RecognizeNumber()
                             copy(number.begin(), number.end(), std::ostream_iterator<int>(showNumber, ""));
                             string n = showNumber.str();
                             string cardType = n.substr(0, 2);
-                            __android_log_print(ANDROID_LOG_ERROR, "TRACKING_SCAN2", "%s", n.c_str());
+//                            __android_log_print(ANDROID_LOG_ERROR, "TRACKING_SCAN2", "%s", n.c_str());
                             if(cardType == "36" || cardType == "38"){
-                                __android_log_print(ANDROID_LOG_INFO, "TRACKING_SCAN3","Scan Dinner");
+//                                __android_log_print(ANDROID_LOG_INFO, "TRACKING_SCAN3","Scan Dinner");
                                 number = {};
                                 card = "diners";
                                 result = numberRecognizer->Process(frame, boundingRect, 3);
@@ -506,7 +506,7 @@ bool CRecognitionCore::RecognizeDate()
             if(auto recognitionResult = _recognitionResult.lock()) {
                 Mat frame;
                 frameStorage->GetCurrentFrame(frame);
-                __android_log_print(ANDROID_LOG_ERROR, "TRACKING_DATE", "%s", card.c_str());
+//                __android_log_print(ANDROID_LOG_ERROR, "TRACKING_DATE", "%s", card.c_str());
                 vector<cv::Mat> samples;
                 result = dateRecognizer->Process(frame, samples, boundingRect, card);
                 dateRecognitionAttemptsCount++;
