@@ -10,7 +10,7 @@ See live demo: [pay.cards](https://play.google.com/store/apps/details?id=cards.p
 
     ```gradle
     repositories {
-         maven { url "http://pay.cards/maven" }
+         maven { url 'https://jitpack.io' }
     }
     ```
 
@@ -19,7 +19,7 @@ See live demo: [pay.cards](https://play.google.com/store/apps/details?id=cards.p
 
     ```gradle
     dependencies {
-        implementation 'cards.pay:paycardsrecognizer:1.1.0'
+        implementation 'com.github.MoemenMostafa:paycards_sdk:1.0'
     }
     ```
 
