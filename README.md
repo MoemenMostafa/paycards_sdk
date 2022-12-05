@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/MoemenMostafa/paycards_sdk.svg)](https://jitpack.io/#MoemenMostafa/paycards_sdk)
+
 # PAY.CARDS RECOGNIZER
 
 Automatic recognition of bank card data using built-in camera on Android devices.
